@@ -9,6 +9,7 @@ then sends to configured recipients via Resend.
 import os
 import json
 import re
+import time
 import datetime
 import smtplib
 from pathlib import Path
@@ -20,11 +21,12 @@ ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 RESEND_API_KEY    = os.environ["RESEND_API_KEY"]
 FROM_EMAIL        = os.environ.get("FROM_EMAIL", "specials@yourdomain.com")
 TO_EMAILS         = [e.strip() for e in os.environ.get("TO_EMAILS", "").split(",") if e.strip()]
+SITE_URL          = os.environ.get("SITE_URL", "")
 
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 RESEND_URL    = "https://api.resend.com/emails"
 MODEL         = "claude-haiku-4-5-20251001"   # cheapest, plenty good for flyer extraction
-MAX_TOKENS    = 1500
+MAX_TOKENS    = 4000
 LB_TO_KG      = 2.20462
 
 CATEGORIES = ["meat", "seafood", "veg", "fruit", "dairy", "other"]
@@ -184,7 +186,7 @@ def fetch_source(source: dict, today: str) -> list[dict]:
     # Extract JSON array from response
     match = re.search(r"\[[\s\S]*\]", text)
     if not match:
-        print(f"    ⚠  No JSON array found for {source['name']}")
+        print(f"    ⚠  No JSON array found for {source['name']}. Response was:\n{text[:500]}")
         return []
 
     raw = match.group(0)
@@ -505,6 +507,7 @@ def build_email_html(all_items: list[dict], week: str, generated_at: str) -> str
           <p style="margin:0;font-size:11px;color:#9b9890;font-family:monospace;line-height:1.6">
             Generated {generated_at} · {len(all_items)} specials<br>
             Prices from publicly available flyers. Always verify at store.
+            {f'<br><a href="{SITE_URL}" style="color:#9b9890">{SITE_URL}</a>' if SITE_URL else ""}
           </p>
         </td>
       </tr>
@@ -570,7 +573,9 @@ def main():
     print(f"   Fetching {len(SOURCES)} sources with {MODEL}…\n")
 
     all_items = []
-    for source in SOURCES:
+    for i, source in enumerate(SOURCES):
+        if i > 0:
+            time.sleep(30)
         try:
             items = fetch_source(source, today_str)
             all_items.extend(items)
