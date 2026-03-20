@@ -361,7 +361,7 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
   <div id="items-container"></div>
 </main>
 <script>
-const ALL={items:{items_json},cats:["meat","seafood","veg","fruit","dairy","other"],catNames:{{meat:"Meat & Poultry",seafood:"Seafood & Fish",veg:"Vegetables",fruit:"Fruit",dairy:"Dairy & Eggs",other:"Grocery & Other"}}};
+const ALL={{items:{items_json},cats:["meat","seafood","veg","fruit","dairy","other"],catNames:{{meat:"Meat & Poultry",seafood:"Seafood & Fish",veg:"Vegetables",fruit:"Fruit",dairy:"Dairy & Eggs",other:"Grocery & Other"}}}};
 const LB_TO_KG=2.20462;
 let cat="all",q="";
 function sp(i){{if(i.priceLb!=null)return i.priceLb;if(i.priceKg!=null)return i.priceKg/LB_TO_KG;return i.priceFlat||9999;}}
