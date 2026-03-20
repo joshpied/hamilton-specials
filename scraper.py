@@ -172,6 +172,8 @@ def fetch_source(source: dict, today: str) -> list[dict]:
     }
 
     resp = httpx.post(ANTHROPIC_URL, json=payload, headers=headers, timeout=120)
+    if not resp.is_success:
+        print(f"    API error {resp.status_code}: {resp.text}", flush=True)
     resp.raise_for_status()
     data = resp.json()
 
