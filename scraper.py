@@ -47,8 +47,8 @@ SOURCES = [
         "color": "#993a20",
         "bg":    "#ffeee8",
         "instructions": (
-            "Fetch the page at https://www.lococos.ca/specials and extract every "
-            "item listed as on special this week at Lococo's grocery store in Hamilton Ontario."
+            'Search for "Lococo\'s grocery Hamilton Ontario weekly specials flyer this week" and extract '
+            "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
         ),
     },
     {
@@ -173,10 +173,19 @@ def fetch_source(source: dict, today: str) -> list[dict]:
         "content-type": "application/json",
     }
 
-    resp = httpx.post(ANTHROPIC_URL, json=payload, headers=headers, timeout=120)
-    if not resp.is_success:
-        print(f"    API error {resp.status_code}: {resp.text}", flush=True)
-    resp.raise_for_status()
+    for attempt in range(4):
+        resp = httpx.post(ANTHROPIC_URL, json=payload, headers=headers, timeout=120)
+        if resp.status_code == 429:
+            wait = 60 * (attempt + 1)
+            print(f"    ⏳ Rate limited — waiting {wait}s (attempt {attempt + 1}/4)…", flush=True)
+            time.sleep(wait)
+            continue
+        if not resp.is_success:
+            print(f"    API error {resp.status_code}: {resp.text}", flush=True)
+        resp.raise_for_status()
+        break
+    else:
+        resp.raise_for_status()
     data = resp.json()
 
     text = "\n".join(
@@ -575,7 +584,7 @@ def main():
     all_items = []
     for i, source in enumerate(SOURCES):
         if i > 0:
-            time.sleep(30)
+            time.sleep(45)
         try:
             items = fetch_source(source, today_str)
             all_items.extend(items)
