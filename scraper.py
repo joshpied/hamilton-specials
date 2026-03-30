@@ -44,8 +44,8 @@ SOURCES = [
     {
         "id": "lococo",
         "name": "Lococo's",
-        "color": "#993a20",
-        "bg":    "#ffeee8",
+        "color": "#ffffff",
+        "bg":    "#7b1113",
         "instructions": (
             'Search for "Lococo\'s grocery Hamilton Ontario weekly specials flyer this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -54,28 +54,47 @@ SOURCES = [
     {
         "id": "fortinos",
         "name": "Fortinos",
-        "color": "#a33800",
-        "bg":    "#fdf0ec",
+        "color": "#ffffff",
+        "bg":    "#cc0000",
         "instructions": (
-            'Search for "Fortinos flyer Hamilton Ontario this week" and extract '
-            "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
+            'Search for "Fortinos flyer this week site:smartcanucks.ca OR site:redflagdeals.com" '
+            "and extract specific product prices. "
+            'If that returns no item-level data, search "Fortinos Ontario weekly specials chicken beef pork produce dairy this week" '
+            "and extract whatever specific items and prices are found. "
+            "Extract current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
         ),
     },
     {
         "id": "nofrills",
         "name": "No Frills",
-        "color": "#7a6000",
-        "bg":    "#fffbea",
+        "color": "#000000",
+        "bg":    "#ffd700",
         "instructions": (
-            'Search for "No Frills flyer Ontario this week" and extract '
-            "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
+            'Search for "No Frills flyer this week site:smartcanucks.ca OR site:redflagdeals.com" '
+            "and extract specific product prices. "
+            'If that returns no item-level data, search "No Frills Ontario weekly specials chicken beef pork produce dairy this week" '
+            "and extract whatever specific items and prices are found. "
+            "Extract current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
+        ),
+    },
+    {
+        "id": "superstore",
+        "name": "Real Canadian Superstore",
+        "color": "#ffffff",
+        "bg":    "#e4002b",
+        "instructions": (
+            'Search for "Real Canadian Superstore flyer this week site:smartcanucks.ca OR site:redflagdeals.com" '
+            "and extract specific product prices. "
+            'If that returns no item-level data, search "Real Canadian Superstore Ontario weekly specials chicken beef pork produce dairy this week" '
+            "and extract whatever specific items and prices are found. "
+            "Extract current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
         ),
     },
     {
         "id": "freshco",
         "name": "FreshCo",
-        "color": "#1a6b38",
-        "bg":    "#eaf6ee",
+        "color": "#ffffff",
+        "bg":    "#00843d",
         "instructions": (
             'Search for "FreshCo flyer Ontario this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -84,8 +103,8 @@ SOURCES = [
     {
         "id": "metro",
         "name": "Metro",
-        "color": "#1a3ea8",
-        "bg":    "#f0f4ff",
+        "color": "#ffffff",
+        "bg":    "#003da5",
         "instructions": (
             'Search for "Metro supermarket flyer Ontario this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -94,8 +113,8 @@ SOURCES = [
     {
         "id": "sobeys",
         "name": "Sobeys",
-        "color": "#a31f1f",
-        "bg":    "#fff0f0",
+        "color": "#ffffff",
+        "bg":    "#c41230",
         "instructions": (
             'Search for "Sobeys flyer Ontario this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -104,8 +123,8 @@ SOURCES = [
     {
         "id": "foodbasics",
         "name": "Food Basics",
-        "color": "#6a1fa8",
-        "bg":    "#f5eaff",
+        "color": "#ffd100",
+        "bg":    "#00843d",
         "instructions": (
             'Search for "Food Basics flyer Ontario this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -114,8 +133,8 @@ SOURCES = [
     {
         "id": "walmart",
         "name": "Walmart",
-        "color": "#8a6000",
-        "bg":    "#fff8e1",
+        "color": "#ffffff",
+        "bg":    "#0071ce",
         "instructions": (
             'Search for "Walmart Canada Ontario flyer grocery this week" and extract '
             "food/grocery specials and Rollback deals (meat, produce, dairy, seafood, packaged food). "
@@ -125,8 +144,8 @@ SOURCES = [
     {
         "id": "costco",
         "name": "Costco",
-        "color": "#1a3cbf",
-        "bg":    "#e8f0fe",
+        "color": "#ffffff",
+        "bg":    "#e31837",
         "instructions": (
             'Search for "Costco Canada Ontario instant savings this week grocery" and extract '
             "food/grocery member savings (meat, seafood, produce, dairy, packaged food). "
