@@ -81,7 +81,7 @@ SOURCES = [
         "id": "superstore",
         "name": "Real Canadian Superstore",
         "color": "#ffffff",
-        "bg":    "#e4002b",
+        "bg":    "#001ba0",
         "instructions": (
             'Search for "Real Canadian Superstore flyer this week site:smartcanucks.ca OR site:redflagdeals.com" '
             "and extract specific product prices. "
@@ -93,8 +93,8 @@ SOURCES = [
     {
         "id": "freshco",
         "name": "FreshCo",
-        "color": "#ffffff",
-        "bg":    "#00843d",
+        "color": "#000000",
+        "bg":    "#e7ff31",
         "instructions": (
             'Search for "FreshCo flyer Ontario this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -103,8 +103,8 @@ SOURCES = [
     {
         "id": "metro",
         "name": "Metro",
-        "color": "#ffffff",
-        "bg":    "#003da5",
+        "color": "#CF3E00",
+        "bg":    "#ffffff",
         "instructions": (
             'Search for "Metro supermarket flyer Ontario this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -114,7 +114,7 @@ SOURCES = [
         "id": "sobeys",
         "name": "Sobeys",
         "color": "#ffffff",
-        "bg":    "#c41230",
+        "bg":    "#31c610",
         "instructions": (
             'Search for "Sobeys flyer Ontario this week" and extract '
             "the current food/grocery specials (meat, produce, dairy, seafood, packaged food only)."
@@ -144,8 +144,8 @@ SOURCES = [
     {
         "id": "costco",
         "name": "Costco",
-        "color": "#ffffff",
-        "bg":    "#e31837",
+        "color": "#e31837",
+        "bg":    "#F5E9DC",
         "instructions": (
             'Search for "Costco Canada Ontario instant savings this week grocery" and extract '
             "food/grocery member savings (meat, seafood, produce, dairy, packaged food). "
