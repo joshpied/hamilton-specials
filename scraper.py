@@ -165,6 +165,7 @@ Each item object must have:
 - "unit":   unit description for flat price e.g. "each", "2 lb bag", "500g" — string or null
 - "expiry": sale end date as "YYYY-MM-DD", or null
 - "note":   short note like "Rollback", "Member Price", "Sale" — or null
+- "flyerUrl": URL of the flyer page or listing where this item was found (string or null)
 
 Rules:
 - Every item must have at least one non-null price field
@@ -253,7 +254,8 @@ def fetch_source(source: dict, today: str) -> list[dict]:
             "priceFlat": float(price_flat) if isinstance(price_flat, (int, float)) else None,
             "unit":      str(item.get("unit", "")) if item.get("unit") else None,
             "expiry":    str(item.get("expiry", "")) if item.get("expiry") else None,
-            "note":      str(item.get("note", ""))   if item.get("note")   else None,
+            "note":      str(item.get("note", ""))     if item.get("note")     else None,
+            "flyerUrl":  str(item.get("flyerUrl", "")) if item.get("flyerUrl") else None,
             "store":     source["id"],
             "storeName": source["name"],
             "storeColor": source["color"],
@@ -350,6 +352,8 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
   .items-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:.6rem}}
   .item-card{{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem .95rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;transition:border-color .15s}}
   .item-card:hover{{border-color:#bbb}}
+  .item-card[data-url]{{cursor:pointer}}
+  .item-card[data-url]:hover{{border-color:var(--accent)}}
   .item-left{{flex:1;min-width:0}}
   .item-name{{font-size:.87rem;line-height:1.35;margin-bottom:.18rem}}
   .item-desc{{font-size:.7rem;color:var(--text3);line-height:1.3;margin-bottom:.28rem;font-family:'Courier New',monospace}}
@@ -418,7 +422,8 @@ function render(){{
       else if(i.priceKg!=null){{const lb=i.priceKg/LB_TO_KG;ph=`$${{lb.toFixed(2)}} <small>/lb</small>`;pa=`$${{i.priceKg.toFixed(2)}}/kg`;}}
       else{{ph=`$${{i.priceFlat.toFixed(2)}}`;pa=i.unit||"";}}
       const exp=fmtExp(i.expiry);
-      html+=`<div class="item-card"><div class="item-left"><div class="item-name">${{i.name}}</div>${{i.desc?`<div class="item-desc">${{i.desc}}</div>`:""}}<div><span class="store-badge" style="background:${{i.storeBg}};color:${{i.storeColor}}">${{i.storeName}}</span>${{i.note?`<span class="note-badge">${{i.note}}</span>`:""}}</div>${{exp?`<div class="expiry${{exp.s?" soon":""}}">${{exp.t}}</div>`:""}}</div><div class="item-right"><div class="price-main">${{ph}}</div><div class="price-alt">${{pa}}</div></div></div>`;
+      const cu=i.flyerUrl||"";
+      html+=`<div class="item-card"${{cu?` data-url="${{cu}}"`:""}}><div class="item-left"><div class="item-name">${{i.name}}</div>${{i.desc?`<div class="item-desc">${{i.desc}}</div>`:""}}<div><span class="store-badge" style="background:${{i.storeBg}};color:${{i.storeColor}}">${{i.storeName}}</span>${{i.note?`<span class="note-badge">${{i.note}}</span>`:""}}</div>${{exp?`<div class="expiry${{exp.s?" soon":""}}">${{exp.t}}</div>`:""}}</div><div class="item-right"><div class="price-main">${{ph}}</div><div class="price-alt">${{pa}}</div></div></div>`;
     }}
     html+="</div></div>";
   }}
@@ -426,6 +431,7 @@ function render(){{
 }}
 document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{{document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");cat=b.dataset.cat;render();}}));
 document.getElementById("search").addEventListener("input",e=>{{q=e.target.value.toLowerCase();render();}});
+document.getElementById("items-container").addEventListener("click",e=>{{const c=e.target.closest(".item-card[data-url]");if(c)window.open(c.dataset.url,"_blank","noopener,noreferrer");}});
 render();
 </script>
 </body>
