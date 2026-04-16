@@ -292,12 +292,13 @@ def format_price_html(item: dict) -> tuple[str, str]:
 
 # ── HTML generation ───────────────────────────────────────────────────────────
 def week_range(today: datetime.date) -> str:
-    mon = today - datetime.timedelta(days=today.weekday())
-    sun = mon + datetime.timedelta(days=6)
+    # Flyer dates run Thursday–Wednesday; find the most recent Thursday
+    thu = today - datetime.timedelta(days=(today.weekday() - 3) % 7)
+    wed = thu + datetime.timedelta(days=6)
     mo  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    if mon.month == sun.month:
-        return f"{mo[mon.month-1]} {mon.day}–{sun.day}, {sun.year}"
-    return f"{mo[mon.month-1]} {mon.day} – {mo[sun.month-1]} {sun.day}, {sun.year}"
+    if thu.month == wed.month:
+        return f"{mo[thu.month-1]} {thu.day}–{wed.day}, {wed.year}"
+    return f"{mo[thu.month-1]} {thu.day} – {mo[wed.month-1]} {wed.day}, {wed.year}"
 
 
 def build_static_html(all_items: list[dict], week: str, generated_at: str) -> str:
