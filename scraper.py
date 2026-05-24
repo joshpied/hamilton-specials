@@ -310,8 +310,8 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
         store_counts[item["storeName"]] = store_counts.get(item["storeName"], 0) + 1
 
     store_badges = " ".join(
-        f'<span style="display:inline-block;font-size:11px;font-family:monospace;'
-        f'padding:2px 8px;border-radius:4px;background:{s["bg"]};color:{s["color"]};margin:2px">'
+        f'<span class="store-filter-badge" data-store="{s["id"]}" style="display:inline-block;font-size:11px;font-family:monospace;'
+        f'padding:2px 8px;border-radius:4px;background:{s["bg"]};color:{s["color"]};margin:2px;cursor:pointer">'
         f'{s["name"]} ({store_counts.get(s["name"],0)})</span>'
         for s in SOURCES
     )
@@ -326,7 +326,7 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
   :root{{--bg:#faf9f6;--surface:#fff;--surface2:#f3f1ed;--border:#e2dfd8;--text:#1a1917;--text2:#6b6860;--text3:#9b9890;--accent:#c84b2f;--amber:#9a5c00;--amber-light:#fdf4e3;--radius:10px}}
   *{{box-sizing:border-box;margin:0;padding:0}}
   body{{font-family:Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh}}
-  header{{background:var(--text);color:#fff;padding:1.25rem 2rem;display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}}
+  header{{background:var(--text);color:#fff;padding:1.25rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}}
   header h1{{font-size:1.4rem;font-weight:normal}}
   .week{{font-family:'Courier New',monospace;font-size:.73rem;color:#aaa;letter-spacing:.05em}}
   .toolbar{{background:var(--surface);border-bottom:1px solid var(--border);padding:.7rem 2rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}}
@@ -334,8 +334,11 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
   .filter-btn.active{{background:var(--text);color:#fff;border-color:var(--text)}}
   .filter-btn:hover:not(.active){{background:var(--surface2)}}
   .vr{{width:1px;height:22px;background:var(--border)}}
-  .search-box{{font-family:inherit;font-size:.8rem;padding:.28rem .7rem;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:170px}}
+  .search-box{{font-family:inherit;font-size:16px;padding:.28rem .7rem;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:200px}}
   .search-box:focus{{outline:none;border-color:var(--text)}}
+  .store-filter-badge{{transition:opacity .15s}}
+  .store-filter-badge:hover{{opacity:.75}}
+  .store-filter-badge.active{{outline:2px solid #555;outline-offset:1px;opacity:1}}
   main{{max-width:1200px;margin:0 auto;padding:1.25rem 2rem 3rem}}
   .meta{{font-size:.72rem;color:var(--text3);font-family:'Courier New',monospace;margin-bottom:1rem;line-height:1.7}}
   .image-only-box{{background:var(--amber-light);border:1px solid #e2c36a;border-radius:8px;padding:.7rem 1rem;margin-bottom:1.1rem;font-size:.77rem;color:var(--amber);line-height:1.5}}
@@ -367,11 +370,13 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
   .price-main small{{font-size:.65rem;font-weight:normal;color:var(--text3)}}
   .price-alt{{font-size:.7rem;font-family:'Courier New',monospace;color:var(--text2);margin-top:1px}}
   .empty-state{{padding:2.5rem;text-align:center;color:var(--text3);font-style:italic;font-size:.88rem}}
+  @media(max-width:768px){{header{{flex-direction:column;align-items:flex-start}}.search-box{{width:100%}}}}
   @media(max-width:600px){{header,.toolbar,main{{padding-left:1rem;padding-right:1rem}}.items-grid{{grid-template-columns:1fr}}}}
 </style>
 </head>
 <body>
 <header>
+  <input class="search-box" type="text" id="search" placeholder="Search items…" autocomplete="off" />
   <h1>🛒 Hamilton Grocery Specials</h1>
   <span class="week">{week}</span>
 </header>
@@ -383,8 +388,6 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
   <button class="filter-btn" data-cat="fruit">🍊 Fruit</button>
   <button class="filter-btn" data-cat="dairy">🧀 Dairy</button>
   <button class="filter-btn" data-cat="other">📦 Other</button>
-  <span class="vr"></span>
-  <input class="search-box" type="text" id="search" placeholder="Search items…" />
 </div>
 <main>
   <div class="meta">
@@ -401,12 +404,13 @@ def build_static_html(all_items: list[dict], week: str, generated_at: str) -> st
 <script>
 const ALL={{items:{items_json},cats:["meat","seafood","veg","fruit","dairy","other"],catNames:{{meat:"Meat & Poultry",seafood:"Seafood & Fish",veg:"Vegetables",fruit:"Fruit",dairy:"Dairy & Eggs",other:"Grocery & Other"}}}};
 const LB_TO_KG=2.20462;
-let cat="all",q="";
+let cat="all",q="",store="all";
 function sp(i){{if(i.priceLb!=null)return i.priceLb;if(i.priceKg!=null)return i.priceKg/LB_TO_KG;return i.priceFlat||9999;}}
 function fmtExp(ds){{if(!ds)return null;const d=new Date(ds),now=new Date();now.setHours(0,0,0,0);if(isNaN(d))return null;const diff=Math.ceil((d-now)/86400000);const mo=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];if(diff<=0)return{{t:"Ends today",s:true}};if(diff===1)return{{t:"Ends tomorrow",s:true}};if(diff<=3)return{{t:diff+" days left",s:true}};return{{t:"Until "+mo[d.getMonth()]+" "+d.getDate(),s:false}};}}
 function render(){{
   const filt=ALL.items.filter(i=>{{
     if(cat!=="all"&&i.cat!==cat)return false;
+    if(store!=="all"&&i.store!==store)return false;
     if(q&&!`${{i.name}} ${{i.storeName}} ${{i.desc}}`.toLowerCase().includes(q))return false;
     return true;
   }});
@@ -431,6 +435,7 @@ function render(){{
   document.getElementById("items-container").innerHTML=html;
 }}
 document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{{document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");cat=b.dataset.cat;render();}}));
+document.querySelectorAll(".store-filter-badge").forEach(b=>b.addEventListener("click",()=>{{const s=b.dataset.store;if(store===s){{store="all";document.querySelectorAll(".store-filter-badge").forEach(x=>x.classList.remove("active"));}}else{{store=s;document.querySelectorAll(".store-filter-badge").forEach(x=>x.classList.remove("active"));b.classList.add("active");}}render();}}));
 document.getElementById("search").addEventListener("input",e=>{{q=e.target.value.toLowerCase();render();}});
 document.getElementById("items-container").addEventListener("click",e=>{{const c=e.target.closest(".item-card[data-url]");if(c)window.open(c.dataset.url,"_blank","noopener,noreferrer");}});
 render();
